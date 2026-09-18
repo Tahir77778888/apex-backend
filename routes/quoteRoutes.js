@@ -21,10 +21,11 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: "Name and phone are required." });
         }
 
+        // 1. Data Database mein save karo
         const newQuote = new Quote({ name, phone });
         await newQuote.save();
 
-        // Email Alert Bhejne ka Code
+        // 2. Email Alert Bhejne ka Code
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: process.env.EMAIL_USER,
@@ -32,13 +33,13 @@ router.post('/', async (req, res) => {
             text: `Hello Admin,\n\nYou have a new lead!\n\nName: ${name}\nPhone: ${phone}\n\nPlease check the Admin Dashboard.`
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error("Email bhejte waqt error:", error);
-            } else {
-                console.log("Email sent successfully: " + info.response);
-            }
-        });
+        // Yahan 'await' lagana zaroori hai taaki server email jane ka wait kare
+        try {
+            let info = await transporter.sendMail(mailOptions);
+            console.log("✅ Email sent successfully: " + info.response);
+        } catch (emailError) {
+            console.error("❌ Email bhejte waqt error aaya:", emailError);
+        }
 
         res.status(201).json({ message: "Quote request saved successfully!", quote: newQuote });
     } catch (error) {
