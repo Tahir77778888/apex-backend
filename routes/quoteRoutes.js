@@ -11,34 +11,9 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: "Name and phone are required." });
         }
 
-        // 1. Database mein save karo
+        // Sirf Database mein save karo (Email hum yahan se nahi bhejenge)
         const newQuote = new Quote({ name, phone });
         await newQuote.save();
-
-        // 2. Web3Forms API se Email Bhejo (Render block bypass)
-        try {
-            const emailResponse = await fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    access_key: 'a67a05ec-f52a-409f-9bb7-87afc005c0d7', // <-- Apna key yahan paste karo
-                    subject: '🚀 New Lead for Apex Construction!',
-                    from_name: 'Apex Admin System',
-                    // Niche ki details Web3Forms apne aap mast table design mein bhejega
-                    Client_Name: name,
-                    Client_Phone: phone,
-                    System_Message: 'Please check the Admin Dashboard for more details.'
-                })
-            });
-
-            const emailResult = await emailResponse.json();
-            console.log("✅ Email API Status:", emailResult);
-        } catch (emailError) {
-            console.error("❌ Email API Error:", emailError);
-        }
 
         res.status(201).json({ message: "Quote request saved successfully!", quote: newQuote });
     } catch (error) {
