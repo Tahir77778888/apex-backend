@@ -4,8 +4,11 @@ const Quote = require('../models/Quote');
 const nodemailer = require('nodemailer');
 
 // Email Setup
+// Email Setup (Strict configuration for Cloud Servers)
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // 465 port ke liye secure true hona zaroori hai
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
